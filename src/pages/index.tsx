@@ -38,7 +38,6 @@ export default function Home({ postsPagination }: HomeProps) {
   const [nextPage, setNextPage] = useState(postsPagination.next_page);
   const [postList, setPostList] = useState<Post[]>(postsPagination.results);
 
-
   function nextPageClick() {
     if (nextPage != null) {
       fetch(nextPage).then(response => response.json()).then(data => {
@@ -85,7 +84,13 @@ export default function Home({ postsPagination }: HomeProps) {
                 <div>
                   <MdDateRange />
                   <time>
-                    {post.first_publication_date}
+                    {format(
+                      new Date(post.first_publication_date),
+                      "PP",
+                      {
+                        locale: ptBR,
+                      }
+                    )}
                   </time>
                 </div>
                 <div>
@@ -126,13 +131,7 @@ export const getStaticProps: GetStaticProps = async () => {
   const posts = postsResponse.results.map(post => {
     return {
       uid: post.uid,
-      first_publication_date: format(
-        new Date(post.first_publication_date),
-        "PP",
-        {
-          locale: ptBR,
-        }
-      ),
+      first_publication_date: post.first_publication_date,
       data: {
         title: post.data.title,
         subtitle: post.data.subtitle,
@@ -141,6 +140,7 @@ export const getStaticProps: GetStaticProps = async () => {
 
     }
   })
+
 
   return {
     props: {

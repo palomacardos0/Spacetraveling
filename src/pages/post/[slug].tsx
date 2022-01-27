@@ -19,9 +19,11 @@ interface Params extends ParsedUrlQuery {
 }
 
 interface Post {
+  uid: string
   first_publication_date: string | null;
   data: {
     title: string;
+    subtitle: string;
     banner: {
       url: string;
     };
@@ -49,7 +51,16 @@ export default function Post({ post }: PostProps) {
     return <div className={styles.fallback}>Carregando...</div>
   }
 
-  const wordsCounter = (post.data.content.map(post => {
+
+  const content = post.data.content.map(ctt => {
+    return ({
+      heading: ctt.heading,
+      body: (RichText.asHtml(ctt.body))
+    })
+  })
+
+
+  const wordsCounter = (content.map(post => {
 
     return String(post.body).split(' ').length + String(post.heading).split(' ').length
 
@@ -75,7 +86,15 @@ export default function Post({ post }: PostProps) {
           <div className={styles.info}>
             <div>
               <MdDateRange />
-              <time>{post.first_publication_date}</time>
+              <time>
+                {format(
+                  new Date(post.first_publication_date),
+                  "PP",
+                  {
+                    locale: ptBR,
+                  }
+                )}
+              </time>
             </div>
             <div>
               <BiUser />
@@ -87,7 +106,7 @@ export default function Post({ post }: PostProps) {
             </div>
           </div>
 
-          {post.data.content.map(texto => (
+          {content.map(texto => (
             <main key={texto.heading}>
               <h2>{texto.heading}</h2>
               <div
@@ -111,13 +130,16 @@ export const getStaticPaths: GetStaticPaths = async () => {
     Prismic.predicates.at('document.type', 'posts')
   ],
     {
-      fetch: ['post.uid'],
       pageSize: 1,
 
     });
 
+  const paths = posts.results.map(post => ({
+    params: { slug: post.uid },
+  }));
+
   return {
-    paths: [{ params: { slug: posts.results[0].uid } }],
+    paths,
     fallback: true,
   }
 
@@ -128,15 +150,11 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const response = await prismic.getByUID('posts', String(slug), {});
 
   const post = {
-    first_publication_date: format(
-      new Date(response.last_publication_date),
-      "PP",
-      {
-        locale: ptBR,
-      }
-    ),
+    uid: response.uid,
+    first_publication_date: response.first_publication_date,
     data: {
       title: response.data.title,
+      subtitle: response.data.subtitle,
       banner: {
         url: response.data.banner.url,
       },
@@ -144,7 +162,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       content: response.data.content.map(ctt => {
         return ({
           heading: ctt.heading,
-          body: (RichText.asHtml(ctt.body))
+          body: (ctt.body)
 
         })
       }),
