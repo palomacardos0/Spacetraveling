@@ -1,18 +1,19 @@
+import { useState } from 'react';
+import { GetStaticProps } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
+
+import Prismic from "@prismicio/client";
+import { getPrismicClient } from '../services/prismic';
+
 import { BiUser } from 'react-icons/bi';
 import { MdDateRange } from 'react-icons/md';
-import Prismic from "@prismicio/client";
 import { format } from 'date-fns';
+
 import ptBR from 'date-fns/locale/pt-BR';
-
-import { GetStaticProps } from 'next';
-
-import { getPrismicClient } from '../services/prismic';
 
 import commonStyles from '../styles/common.module.scss';
 import styles from './home.module.scss';
-import { useState } from 'react';
 
 interface Post {
   uid?: string;
@@ -104,11 +105,13 @@ export default function Home({ postsPagination }: HomeProps) {
 
 
       </div>
-      {
-        nextPage == null || (<button className={styles.linkLoad} onClick={nextPageClick}>
-          Carregar mais posts
-        </button>)
-      }
+      <footer>
+        {
+          nextPage == null || (<button className={styles.linkLoad} onClick={nextPageClick}>
+            Carregar mais posts
+          </button>)
+        }
+      </footer>
     </main>
 
 
@@ -122,7 +125,7 @@ export const getStaticProps: GetStaticProps = async () => {
   ],
     {
       fetch: ['posts.title', 'posts.content', 'posts.author', 'posts.subtitle', 'next_page'],
-      pageSize: 1,
+      pageSize: 2,
 
     });
 
@@ -140,7 +143,6 @@ export const getStaticProps: GetStaticProps = async () => {
 
     }
   })
-
 
   return {
     props: {

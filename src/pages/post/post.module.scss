@@ -36,7 +36,7 @@
 
 .info{
 
-  margin: 1.5rem 0 4rem;
+  margin: 1.5rem 0 1rem;
   font-size: 0.875rem;
   display: flex;
   align-items: center;
@@ -44,6 +44,11 @@
   gap: 1.5rem;
   svg{
     margin-right: 0.5rem;
+  }
+
+  & + div {
+    margin-bottom: 4rem;
+    font-style: italic;
   }
 
 }
@@ -56,4 +61,25 @@
   align-items: center;
   justify-content: center;
   margin-top: 5rem;
+}
+
+.navigation{
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid rgba($color: #D7D7D7, $alpha: 0.1) ;
+  padding: 3rem 0 5rem;
+
+  a{
+    color: var(--white);
+    
+    
+    strong{
+      color: var(--pink);
+      font-size: 1rem;
+    }
+  }
+}
+
+.footer{
+  margin-bottom: 5rem;
 }
