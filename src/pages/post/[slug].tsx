@@ -59,12 +59,13 @@ interface NavigationProps {
 }
 
 interface PostProps {
-  navigation: NavigationProps
+  preview: boolean;
+  navigation: NavigationProps;
 
   post: Post;
 }
 
-export default function Post({ post, navigation }: PostProps) {
+export default function Post({ post, navigation, preview }: PostProps) {
 
   const router = useRouter()
 
@@ -92,9 +93,6 @@ export default function Post({ post, navigation }: PostProps) {
   if (navigation.previous !== null) {
     previous = navigation.previous
   }
-
-  console.log(previous)
-  console.log(next)
 
   const content = post.data.content.map(ctt => {
     return ({
@@ -200,6 +198,13 @@ export default function Post({ post, navigation }: PostProps) {
         </div>
 
         <Comments />
+        {preview && (
+          <aside >
+            <Link href="/api/exit-preview">
+              <a className={commonStyles.exitPreview}>Sair do modo Preview</a>
+            </Link>
+          </aside>
+        )}
       </footer>
     </>
   );
@@ -228,10 +233,10 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 
-export const getStaticProps: GetStaticProps = async ({ params }) => {
+export const getStaticProps: GetStaticProps = async ({ params, preview = false, previewData }) => {
   const { slug } = params as Params;
   const prismic = getPrismicClient();
-  const response = await prismic.getByUID('posts', String(slug), {});
+  const response = await prismic.getByUID('posts', String(slug), { ref: previewData?.ref ?? null });
 
   const post = {
     uid: response.uid,
@@ -275,7 +280,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
   return {
     props: {
-
+      preview,
       navigation: {
         next: nextPost.results[0] ?? null,
         previous: previousPost.results[0] ?? null

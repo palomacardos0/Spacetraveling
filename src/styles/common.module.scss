@@ -4,3 +4,21 @@
   margin: 0 auto;
   padding: 0 2rem;
 }
+
+.exitPreview{
+  width: 100%;
+  padding: 1.125rem;
+  margin-top: 5rem;
+  border-radius: 3px;
+  border: none;
+  background: var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--black);
+  transition: 0.2s;
+
+  &:hover{
+    background: var(--gray-300);
+  }
+}
